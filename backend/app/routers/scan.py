@@ -157,6 +157,10 @@ def _input_error(exc: ValueError) -> HTTPException:
     return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
 
 
+def _target_error(exc: ValueError) -> HTTPException:
+    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+
+
 @router.post("/password", response_model=ScanHistoryRecord)
 async def run_password_scan(
     payload: PasswordScanRequest,
