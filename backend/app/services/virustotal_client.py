@@ -149,29 +149,64 @@ async def scan_file_hash(file_hash: str) -> Dict[str, Any]:
         raise ValueError("Provide an MD5, SHA-1, or SHA-256 hexadecimal hash")
 
     payload = await _request("GET", f"files/{digest}")
-    if payload is None:
+    if payload is not None:
+        attributes = _attributes(payload)
+        stats = attributes.get("last_analysis_stats", {})
         return {
             "provider": "virustotal",
-            "status": "not_found",
+            "status": "completed",
             "resource": digest,
-            "detail": "Hash unknown to VirusTotal - upload the sample via their UI first.",
+            "file_name": attributes.get("meaningful_name"),
+            "type_description": attributes.get("type_description"),
+            "size_bytes": attributes.get("size"),
+            "threat_label": attributes.get("popular_threat_classification", {}).get(
+                "suggested_threat_label"
+            ),
+            "stats": stats,
+            "derived_status": _derive_status(stats),
+            "permalink": f"https://www.virustotal.com/gui/file/{digest}",
         }
 
-    attributes = _attributes(payload)
-    stats = attributes.get("last_analysis_stats", {})
     return {
         "provider": "virustotal",
-        "status": "completed",
+        "status": "not_found",
         "resource": digest,
-        "file_name": attributes.get("meaningful_name"),
-        "type_description": attributes.get("type_description"),
-        "size_bytes": attributes.get("size"),
-        "threat_label": attributes.get("popular_threat_classification", {}).get(
-            "suggested_threat_label"
-        ),
-        "stats": stats,
-        "derived_status": _derive_status(stats),
-        "permalink": f"https://www.virustotal.com/gui/file/{digest}",
+        "detail": "Hash unknown to VirusTotal. File has been submitted for analysis.",
+        "submitted_for_analysis": True,
+    }
+
+
+async def upload_file_for_analysis(file_bytes: bytes, filename: str) -> Dict[str, Any]:
+    """Upload a file to VirusTotal for analysis and return the analysis ID."""
+    if not settings.VIRUSTOTAL_API_KEY:
+        return _missing_key_result()
+
+    try:
+        async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS, headers=_headers()) as client:
+            response = await client.post(
+                f"{BASE_URL}/files",
+                files={"file": (filename, file_bytes, "application/octet-stream")},
+            )
+    except httpx.HTTPError as exc:
+        raise VirusTotalError(f"VirusTotal upload failed: {exc}") from exc
+
+    if response.status_code in (401, 403):
+        raise VirusTotalError("VirusTotal rejected the configured API key")
+    if response.status_code == 429:
+        raise VirusTotalError("VirusTotal quota exceeded - slow down or upgrade tier")
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as exc:
+        raise VirusTotalError(f"VirusTotal returned HTTP {response.status_code}") from exc
+
+    data = response.json()
+    analysis_id = data.get("data", {}).get("id", "")
+    return {
+        "provider": "virustotal",
+        "status": "submitted",
+        "analysis_id": analysis_id,
+        "detail": "File uploaded for analysis. Results will be available shortly.",
+        "permalink": f"https://www.virustotal.com/gui/file/{analysis_id}",
     }
 
 

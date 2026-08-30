@@ -282,6 +282,10 @@ async def run_file_scan(
     t0 = time.monotonic()
     try:
         result = await virustotal_client.scan_file_hash(digest)
+        if result.get("status") == "not_found":
+            result = await virustotal_client.upload_file_for_analysis(
+                content, file.filename or "uploaded_file"
+            )
     except virustotal_client.VirusTotalError as exc:
         raise _provider_error(str(exc))
     except ValueError as exc:

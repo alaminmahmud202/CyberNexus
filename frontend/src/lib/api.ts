@@ -1,5 +1,4 @@
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+export const API_BASE_URL = "";
 
 const TOKEN_KEY = "cybernexus_token";
 const REFRESH_KEY = "cybernexus_refresh_token";

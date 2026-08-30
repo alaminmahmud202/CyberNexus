@@ -115,6 +115,10 @@ export function toastLoading(message: string) {
   return toast(message, "loading");
 }
 
+export function toastInfo(message: string) {
+  return toast(message, "info");
+}
+
 export function toastUpdate(id: string, message: string, type: ToastType = "info", duration?: number) {
   const idx = toasts.findIndex((t) => t.id === id);
   if (idx !== -1) {

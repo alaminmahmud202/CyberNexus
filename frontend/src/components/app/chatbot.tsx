@@ -181,7 +181,7 @@ export function ChatBot() {
               />
               <Button
                 type="submit"
-                size="icon"
+                size="sm"
                 disabled={!input.trim() || loading}
                 className="shrink-0"
               >
