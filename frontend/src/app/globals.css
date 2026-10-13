@@ -19,19 +19,6 @@
     --safe: 52 211 153;
     --warning: 251 191 36;
     --danger: 248 113 113;
-
-    /* Security Overview console palette (matches DESIGN_SPEC_DASHBOARD.md §3) */
-    --canvas: 232 232 232;
-    --console: 10 10 10;
-    --console-raised: 17 17 17;
-    --console-soft: 20 20 20;
-    --console-pill: 26 26 26;
-    --console-line: 30 30 30;
-    --console-hairline: 34 34 34;
-    --console-hover: 42 42 42;
-    --fg: 255 255 255;
-    --fg-muted: 138 138 138;
-    --fg-faint: 107 107 107;
   }
 
   html {

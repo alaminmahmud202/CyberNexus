@@ -6,42 +6,6 @@ const config: Config = {
     extend: {
       colors: {
         base: "#0A0E14",
-        /* ---- Security Overview console palette (design reference) ---- */
-        canvas: "#E8E8E8",
-        console: {
-          DEFAULT: "#0A0A0A",
-          raised: "#111111",
-          soft: "#141414",
-          pill: "#1A1A1A",
-          line: "#1E1E1E",
-          hairline: "#222222",
-          hover: "#2A2A2A",
-        },
-        fg: {
-          DEFAULT: "#FFFFFF",
-          muted: "#8A8A8A",
-          faint: "#6B6B6B",
-        },
-        mint: {
-          100: "#A7F3D0",
-          300: "#5EEAD4",
-          400: "#34D399",
-          500: "#2ED88F",
-          600: "#1F9D68",
-          700: "#1A7A55",
-          800: "#14532D",
-          900: "#0F3D2E",
-        },
-        sev: {
-          high: "#E5484D",
-          medium: "#E8B923",
-          low: "#5EEAD4",
-        },
-        risk: {
-          high: "#E5484D",
-          medium: "#E8B923",
-          low: "#2ED88F",
-        },
         surface: {
           DEFAULT: "#121826",
           raised: "#1A2333",
