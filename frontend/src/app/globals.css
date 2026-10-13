@@ -3,12 +3,45 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 10 14 20;
+    --surface: 18 24 38;
+    --surface-raised: 26 35 51;
+    --surface-sunken: 13 19 32;
+    --edge: 31 42 60;
+    --edge-strong: 44 59 84;
+    --ink: 230 237 243;
+    --ink-muted: 148 166 184;
+    --ink-faint: 92 110 128;
+    --accent: 34 211 238;
+    --accent-strong: 103 232 249;
+    --accent-deep: 14 116 144;
+    --safe: 52 211 153;
+    --warning: 251 191 36;
+    --danger: 248 113 113;
+
+    /* Security Overview console palette (matches DESIGN_SPEC_DASHBOARD.md §3) */
+    --canvas: 232 232 232;
+    --console: 10 10 10;
+    --console-raised: 17 17 17;
+    --console-soft: 20 20 20;
+    --console-pill: 26 26 26;
+    --console-line: 30 30 30;
+    --console-hairline: 34 34 34;
+    --console-hover: 42 42 42;
+    --fg: 255 255 255;
+    --fg-muted: 138 138 138;
+    --fg-faint: 107 107 107;
+  }
+
   html {
     color-scheme: dark;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-base text-ink;
+    @apply bg-base text-ink antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   ::selection {
@@ -30,20 +63,105 @@
     border-radius: 9999px;
   }
 
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: theme("colors.edge.strong");
+  }
+
   ::-webkit-scrollbar-track {
     background: transparent;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent/60 ring-offset-2 ring-offset-base;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-surface/60 backdrop-blur-xl border border-edge/50;
+  }
+
+  .glass-strong {
+    @apply bg-surface/80 backdrop-blur-2xl border border-edge/30;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-accent via-accent-strong to-blue-400 bg-clip-text text-transparent;
+  }
+
+  .card-interactive {
+    @apply transition-all duration-300 ease-out hover:shadow-card-hover hover:border-accent/40 hover:-translate-y-0.5;
+  }
+
+  .input-focus {
+    @apply focus:border-accent/70 focus:ring-2 focus:ring-accent/20 focus:outline-none;
+  }
+
+  .shimmer {
+    @apply relative overflow-hidden bg-surface-raised;
+  }
+
+  .shimmer::after {
+    content: "";
+    @apply absolute inset-0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(34, 211, 238, 0.08),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-in {
+    animation: animate-in 0.6s ease-out forwards;
+  }
+
+  .animate-in-slow {
+    animation: animate-in 0.9s ease-out forwards;
+  }
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
 @layer utilities {
   .bg-grid {
-    background-image: linear-gradient(to right, rgb(148 166 184 / 0.07) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(148 166 184 / 0.07) 1px, transparent 1px);
-    background-size: 42px 42px;
+    background-image:
+      linear-gradient(to right, rgb(148 166 184 / 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(148 166 184 / 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
 
   .bg-grid-fade {
     mask-image: radial-gradient(ellipse 80% 60% at 50% 35%, black 30%, transparent 78%);
     -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 35%, black 30%, transparent 78%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }

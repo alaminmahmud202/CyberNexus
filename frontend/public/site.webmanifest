@@ -1,0 +1,36 @@
+{
+  "name": "CyberNexus",
+  "short_name": "CyberNexus",
+  "description": "A unified console for threat intelligence and security auditing. Scan URLs, files, domains, and hosts; analyze email headers; audit certificates and hardening — all from one professional dashboard.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080D14",
+  "theme_color": "#22D3EE",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["security", "utilities", "developer-tools"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Access your security dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "/favicon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Run a Scan",
+      "short_name": "Scan",
+      "description": "Run a new security scan",
+      "url": "/dashboard",
+      "icons": [{ "src": "/favicon.svg", "sizes": "192x192" }]
+    }
+  ]
+}

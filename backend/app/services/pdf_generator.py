@@ -1,9 +1,53 @@
 """PDF report generator for CyberNexus scan reports."""
 import json
+import unicodedata
 from datetime import datetime
 from typing import Any, Dict, List
 
 from fpdf import FPDF
+
+
+# Typographic characters that are not in latin-1, mapped to their ASCII
+# equivalents so em dashes / curly quotes keep their meaning instead of
+# being blanked out.
+_UNICODE_TRANSLATION = str.maketrans(
+    {
+        "\u2018": "'", "\u2019": "'", "\u201a": "'", "\u201b": "'",
+        "\u201c": '"', "\u201d": '"', "\u201e": '"',
+        "\u2010": "-", "\u2011": "-", "\u2013": "-", "\u2014": "-",
+        "\u2022": "-", "\u2023": "-", "\u2026": "...",
+        "\u00a0": " ", "\u2007": " ", "\u2009": " ", "\u202f": " ",
+        "\u00ad": "", "\u200b": "",
+    }
+)
+
+
+def to_latin1_safe(text: Any) -> str:
+    """Coerce ``text`` into something fpdf2's built-in fonts can render.
+
+    Helvetica/Courier are latin-1 only, so a single em dash, curly quote,
+    ellipsis, emoji or CJK character makes ``FPDF.normalize_text`` raise
+    ``FPDFUnicodeEncodingException`` and the whole PDF download 500s.
+
+    Pass 1 translates known typographic characters to ASCII; pass 2
+    transliterates accented letters (é -> e); anything still unrenderable
+    (CJK, emoji) becomes a visible "?" instead of crashing.
+    """
+    source = str(text).translate(_UNICODE_TRANSLATION)
+    out: List[str] = []
+    for char in source:
+        try:
+            char.encode("latin-1")
+        except UnicodeEncodeError:
+            folded = (
+                unicodedata.normalize("NFKD", char)
+                .encode("ascii", "ignore")
+                .decode("ascii")
+            )
+            out.append(folded or "?")
+        else:
+            out.append(char)
+    return "".join(out)
 
 
 RECOMMENDATIONS: Dict[str, List[str]] = {
@@ -89,6 +133,14 @@ STATUS_LABELS = {
 
 class CyberNexusPDF(FPDF):
     """Custom PDF class with CyberNexus branding."""
+
+    def normalize_text(self, text: str) -> str:
+        """Sanitize before fpdf2 validates the encoding of built-in fonts.
+
+        Every ``cell``/``multi_cell`` call funnels through here, so this is
+        the single place that has to guarantee latin-1 safety.
+        """
+        return super().normalize_text(to_latin1_safe(text))
 
     def header(self):
         self.set_font("Helvetica", "B", 10)

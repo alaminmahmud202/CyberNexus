@@ -76,7 +76,7 @@ export default function ReportsPage() {
   const [report, setReport] = useState<ReportRecord | null>(null);
   const [task, setTask] = useState<TaskRecord | null>(null);
   const [generating, setGenerating] = useState(false);
-  const [downloading, setDownloading] = useState(false);
+  const [downloading, setDownloading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [reports, setReports] = useState<ReportRecord[]>([]);
 
@@ -150,19 +150,19 @@ export default function ReportsPage() {
     }
   }
 
-  async function handleDownload() {
-    if (!report) return;
-    setDownloading(true);
+  async function handleDownload(reportId: string) {
+    if (!reportId || downloading) return;
+    setDownloading(reportId);
     setError(null);
     try {
       await apiDownload(
-        `/api/reports/${report.id}/download`,
-        `cybernexus-report-${report.id}.pdf`
+        `/api/reports/${reportId}/download`,
+        `cybernexus-report-${reportId}.pdf`
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Download failed");
     } finally {
-      setDownloading(false);
+      setDownloading(null);
     }
   }
 
@@ -190,6 +190,15 @@ export default function ReportsPage() {
         on the History page.
       </p>
 
+      {error && (
+        <div
+          role="alert"
+          className="mt-4 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger"
+        >
+          {error}
+        </div>
+      )}
+
       <Card className="mt-8">
         <CardContent className="pt-6">
           <form onSubmit={handleGenerate} className="flex flex-col gap-3 sm:flex-row">
@@ -204,7 +213,6 @@ export default function ReportsPage() {
               {generating ? "Generating..." : "Generate report"}
             </Button>
           </form>
-          {error && <p className="mt-3 text-sm text-danger">{error}</p>}
         </CardContent>
       </Card>
 
@@ -249,9 +257,14 @@ export default function ReportsPage() {
                   report {report.id} - {new Date(report.createdAt).toLocaleString()}
                 </p>
               </div>
-              <Button variant="secondary" size="sm" onClick={handleDownload} disabled={downloading}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => handleDownload(report.id)}
+                disabled={downloading !== null}
+              >
                 <Download className="h-4 w-4" />
-                {downloading ? "Preparing..." : "Download PDF"}
+                {downloading === report.id ? "Preparing..." : "Download PDF"}
               </Button>
             </div>
           </CardHeader>
@@ -307,16 +320,28 @@ export default function ReportsPage() {
           <CardContent className="p-0">
             <div className="divide-y divide-edge">
               {reports.map((r) => (
-                <div key={r.id} className="flex items-center justify-between px-6 py-3">
+                <div key={r.id} className="flex items-center justify-between gap-3 px-6 py-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-ink truncate">{r.title}</p>
                     <p className="font-mono text-[11px] text-ink-faint">
                       {serviceTypeLabel(r.serviceType)} - {new Date(r.createdAt).toLocaleString()}
                     </p>
                   </div>
-                  <Badge variant={severityBadge(riskStatus(r.content.result))}>
-                    {riskStatus(r.content.result)}
-                  </Badge>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Badge variant={severityBadge(riskStatus(r.content.result))}>
+                      {riskStatus(r.content.result)}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      onClick={() => handleDownload(r.id)}
+                      disabled={downloading !== null}
+                      aria-label={`Download PDF for ${r.title}`}
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      {downloading === r.id ? "Preparing..." : "PDF"}
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

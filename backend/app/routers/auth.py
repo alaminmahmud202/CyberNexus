@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 from typing import Any, Dict
 
+from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError
 
@@ -39,6 +40,7 @@ async def register(payload: UserCreate) -> UserPublic:
         "name": payload.name.strip(),
         "email": email,
         "passwordHash": hash_password(payload.password),
+        "role": "user",
         "createdAt": datetime.now(timezone.utc),
     }
     await users(db).insert_one(doc)
@@ -58,9 +60,10 @@ async def login(payload: UserLogin) -> TokenPair:
         )
 
     subject = str(user["_id"])
+    role = user.get("role", "user")
     return TokenPair(
-        access_token=create_access_token(subject),
-        refresh_token=create_refresh_token(subject),
+        access_token=create_access_token(subject, role=role),
+        refresh_token=create_refresh_token(subject, role=role),
     )
 
 
@@ -102,7 +105,6 @@ async def refresh_token(payload: RefreshRequest) -> TokenPair:
         )
 
     db = get_database()
-    from bson import ObjectId
     user = await users(db).find_one({"_id": ObjectId(subject)})
     if user is None:
         raise HTTPException(
@@ -110,7 +112,8 @@ async def refresh_token(payload: RefreshRequest) -> TokenPair:
             detail="User no longer exists",
         )
 
+    role = user.get("role", "user")
     return TokenPair(
-        access_token=create_access_token(subject),
-        refresh_token=create_refresh_token(subject),
+        access_token=create_access_token(subject, role=role),
+        refresh_token=create_refresh_token(subject, role=role),
     )

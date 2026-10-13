@@ -11,8 +11,9 @@ def mock_db():
     import app.db.mongodb as mdb
     from app.db.collections import ensure_indexes
 
-    database = AsyncMongoMockClient()["cybernexus_test"]
-    mdb.mongodb.client = AsyncMongoMockClient()
+    client = AsyncMongoMockClient()
+    database = client["cybernexus_test"]
+    mdb.mongodb.client = client
     mdb.mongodb.database = database
 
     yield database

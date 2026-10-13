@@ -1,20 +1,10 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-backend/.venv/
-.env
-*.egg-info/
-dist/
-build/
+# Root .gitignore for CyberNexus
 
-# Node
-node_modules/
-.next/
-out/
+# Environment files (all)
+.env
+.env.local
+.env.*.local
+*.env
 
 # IDE
 .vscode/
@@ -29,5 +19,36 @@ Thumbs.db
 # Logs
 *.log
 
-# Test files
-test_report.pdf
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+ENV/
+
+# Node
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+.nyc_output/
+htmlcov/
+.coverage
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# Vercel/Netlify
+.vercel
+.netlify

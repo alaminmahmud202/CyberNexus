@@ -21,10 +21,12 @@ function initials(name: string): string {
 export function UserMenu() {
   const router = useRouter();
   const [user, setUser] = useState<StoredUser | null>(null);
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     setUser(getStoredUser());
   }, []);
 
@@ -57,6 +59,16 @@ export function UserMenu() {
     setUser(null);
     setOpen(false);
     router.push("/login");
+  }
+
+  // During SSR and before hydration, render a placeholder to avoid mismatch
+  if (!mounted) {
+    return (
+      <div className="flex h-10 items-center gap-2 rounded-lg px-2">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-edge bg-surface-sunken" />
+        <ChevronDown className="h-4 w-4 text-ink-faint" />
+      </div>
+    );
   }
 
   if (!user) {

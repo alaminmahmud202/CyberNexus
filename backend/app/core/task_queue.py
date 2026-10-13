@@ -5,9 +5,9 @@ from enum import Enum
 from typing import Any, Callable, Coroutine, Dict, Optional
 
 from bson import ObjectId
-from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.db.collections import TASKS, notifications, tasks
+from app.db.mongodb import SyncDatabase
 
 
 class TaskStatus(str, Enum):
@@ -27,7 +27,7 @@ class TaskQueue:
 
     async def enqueue(
         self,
-        db: AsyncIOMotorDatabase,
+        db: SyncDatabase,
         user_id: str,
         task_type: str,
         handler: Callable[..., Coroutine[Any, Any, Any]],
@@ -57,7 +57,7 @@ class TaskQueue:
 
     async def _run(
         self,
-        db: AsyncIOMotorDatabase,
+        db: SyncDatabase,
         task_id: str,
         user_id: str,
         handler: Callable[..., Coroutine[Any, Any, Any]],
@@ -83,7 +83,7 @@ class TaskQueue:
             finally:
                 self._tasks.pop(task_id, None)
 
-    async def get_status(self, db: AsyncIOMotorDatabase, task_id: str) -> Optional[Dict[str, Any]]:
+    async def get_status(self, db: SyncDatabase, task_id: str) -> Optional[Dict[str, Any]]:
         oid = ObjectId(task_id)
         doc = await tasks(db).find_one({"_id": oid})
         if doc is None:
@@ -93,7 +93,7 @@ class TaskQueue:
 
     async def list_user_tasks(
         self,
-        db: AsyncIOMotorDatabase,
+        db: SyncDatabase,
         user_id: str,
         limit: int = 20,
         skip: int = 0,
@@ -113,7 +113,7 @@ class TaskQueue:
 
 
 async def _update_status(
-    db: AsyncIOMotorDatabase,
+    db: SyncDatabase,
     task_id: str,
     status: TaskStatus,
     result: Any = None,
@@ -130,7 +130,7 @@ async def _update_status(
 
 
 async def _notify(
-    db: AsyncIOMotorDatabase,
+    db: SyncDatabase,
     user_id: str,
     message: str,
     task_id: str,

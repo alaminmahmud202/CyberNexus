@@ -1,7 +1,5 @@
-"""MongoDB collection names, accessors, indexes, and serialization helpers."""
+"""Collection names, accessors, indexes, and serialization helpers for in-memory storage."""
 from typing import Any, Dict
-
-from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
 
 USERS = "users"
 SCAN_HISTORY = "scan_history"
@@ -11,43 +9,36 @@ NOTIFICATIONS = "notifications"
 TASKS = "tasks"
 
 
-def users(db: AsyncIOMotorDatabase) -> AsyncIOMotorCollection:
+def users(db) -> Any:
     return db[USERS]
 
 
-def scan_history(db: AsyncIOMotorDatabase) -> AsyncIOMotorCollection:
+def scan_history(db) -> Any:
     return db[SCAN_HISTORY]
 
 
-def search_history(db: AsyncIOMotorDatabase) -> AsyncIOMotorCollection:
+def search_history(db) -> Any:
     return db[SEARCH_HISTORY]
 
 
-def reports(db: AsyncIOMotorDatabase) -> AsyncIOMotorCollection:
+def reports(db) -> Any:
     return db[REPORTS]
 
 
-def notifications(db: AsyncIOMotorDatabase) -> AsyncIOMotorCollection:
+def notifications(db) -> Any:
     return db[NOTIFICATIONS]
 
 
-def tasks(db: AsyncIOMotorDatabase) -> AsyncIOMotorCollection:
+def tasks(db) -> Any:
     return db[TASKS]
 
 
-async def ensure_indexes(db: AsyncIOMotorDatabase) -> None:
-    await db[USERS].create_index("email", unique=True)
-    await db[SCAN_HISTORY].create_index([("userId", 1), ("createdAt", -1)])
-    await db[SEARCH_HISTORY].create_index([("userId", 1), ("createdAt", -1)])
-    await db[REPORTS].create_index([("userId", 1), ("createdAt", -1)])
-    await db[REPORTS].create_index("scanId")
-    await db[NOTIFICATIONS].create_index([("userId", 1), ("createdAt", -1)])
-    await db[TASKS].create_index([("userId", 1), ("createdAt", -1)])
-    await db[TASKS].create_index("status")
+async def ensure_indexes(db) -> None:
+    pass
 
 
 def serialize_doc(doc: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a copy of a Mongo document with _id renamed to id (str)."""
+    """Return a copy of a document with _id renamed to id (str)."""
     data = dict(doc)
     if "_id" in data:
         data["id"] = str(data.pop("_id"))

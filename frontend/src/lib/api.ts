@@ -1,4 +1,7 @@
-export const API_BASE_URL = "";
+// API base URL - defaults to empty string for same-origin requests in production
+// In development, Next.js rewrites handle proxying to localhost:8000
+// In production, set NEXT_PUBLIC_API_BASE_URL to your backend URL
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 const TOKEN_KEY = "cybernexus_token";
 const REFRESH_KEY = "cybernexus_refresh_token";
@@ -6,11 +9,13 @@ const USER_KEY = "cybernexus_user";
 
 export class ApiError extends Error {
   status: number;
+  isNetworkError: boolean;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, isNetworkError = false) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.isNetworkError = isNetworkError;
   }
 }
 
@@ -75,6 +80,14 @@ async function tryRefreshToken(): Promise<string | null> {
   }
 }
 
+/**
+ * Determines if an error is a network-level failure (fetch threw)
+ * vs an HTTP error response (4xx, 5xx).
+ */
+function isNetworkError(error: unknown): boolean {
+  return error instanceof TypeError && error.message === "Failed to fetch";
+}
+
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   if (!headers.has("Content-Type") && !(init.body instanceof FormData)) {
@@ -86,7 +99,22 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  let response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+  } catch (error) {
+    // Network-level failure: backend unreachable, CORS, DNS, etc.
+    if (isNetworkError(error)) {
+      throw new ApiError(
+        "Unable to connect to the server. Please check your connection and try again.",
+        0,
+        true
+      );
+    }
+    // Re-throw other unexpected errors
+    throw error;
+  }
 
   if (response.status === 401 && !path.includes("/api/auth/")) {
     if (!refreshPromise) {
@@ -98,7 +126,18 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     const newToken = await refreshPromise;
     if (newToken) {
       headers.set("Authorization", `Bearer ${newToken}`);
-      response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+      try {
+        response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+      } catch (error) {
+        if (isNetworkError(error)) {
+          throw new ApiError(
+            "Unable to connect to the server. Please check your connection and try again.",
+            0,
+            true
+          );
+        }
+        throw error;
+      }
     }
   }
 
@@ -122,7 +161,20 @@ export async function apiDownload(path: string, fallbackFilename: string): Promi
   const token = getStoredToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  let response = await fetch(`${API_BASE_URL}${path}`, { headers });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, { headers });
+  } catch (error) {
+    if (isNetworkError(error)) {
+      throw new ApiError(
+        "Unable to connect to the server. Please check your connection and try again.",
+        0,
+        true
+      );
+    }
+    throw error;
+  }
 
   if (response.status === 401 && !path.includes("/api/auth/")) {
     if (!refreshPromise) {
@@ -133,7 +185,18 @@ export async function apiDownload(path: string, fallbackFilename: string): Promi
     const newToken = await refreshPromise;
     if (newToken) {
       headers.set("Authorization", `Bearer ${newToken}`);
-      response = await fetch(`${API_BASE_URL}${path}`, { headers });
+      try {
+        response = await fetch(`${API_BASE_URL}${path}`, { headers });
+      } catch (error) {
+        if (isNetworkError(error)) {
+          throw new ApiError(
+            "Unable to connect to the server. Please check your connection and try again.",
+            0,
+            true
+          );
+        }
+        throw error;
+      }
     }
   }
 
@@ -154,8 +217,13 @@ export async function apiDownload(path: string, fallbackFilename: string): Promi
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = match ? match[1] : fallbackFilename;
+  anchor.style.display = "none";
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  URL.revokeObjectURL(url);
+
+  // Revoking synchronously after click() makes the download silently no-op in
+  // some browsers, because they resolve the blob URL asynchronously. Release it
+  // on a later tick instead.
+  window.setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
