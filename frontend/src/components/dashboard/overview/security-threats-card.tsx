@@ -118,13 +118,7 @@ export function SecurityThreatsCard() {
       />
 
       <div className="mt-4">
-        <div
-          aria-hidden="true"
-          className={cn(
-            GRID_COLS,
-            "px-1 pb-3 text-[12px] text-fg-muted"
-          )}
-        >
+        <div className={cn(GRID_COLS, "px-1 pb-3 text-[12px] text-fg-muted")}>
           <span>Entity</span>
           <span>Category</span>
           <span>Risk Level</span>

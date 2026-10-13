@@ -62,7 +62,7 @@ export function AlertCenterCard() {
       <ul aria-label="Recent alerts" className="mt-2">
         {alerts.map((alert) => (
           <li
-            key={`${alert.title}-${alert.time}`}
+            key={`${alert.title}-${alert.severity}-${alert.time}`}
             className="flex items-center justify-between gap-3 border-b border-console-line py-4 last:border-0"
           >
             <div className="min-w-0">
