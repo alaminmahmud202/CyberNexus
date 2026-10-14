@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Search, ShieldCheck, TrendingUp, Mail } from "lucide-react";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/brand-icons";
+import { ArrowRight, CheckCircle2, Search, ShieldCheck, TrendingUp } from "lucide-react";
 
 import { PublicNavbar } from "@/components/app/public-navbar";
 import { ShieldIllustration } from "@/components/app/shield-illustration";
@@ -50,12 +49,6 @@ const HOW_IT_WORKS = [
     icon: CheckCircle2,
   },
 ];
-
-const AUTHORITY_CONTACT = {
-  email: "alaminmahmud684@gmail.com",
-  linkedin: "https://www.linkedin.com/in/alaminmahmud202/",
-  github: "https://github.com/alaminmahmud202",
-};
 
 export default function HomePage() {
   return (
@@ -232,24 +225,21 @@ export default function HomePage() {
                 About CyberNexus
               </p>
               <h2 className="mt-3 font-display text-display-md lg:text-display-lg font-bold">
-                Built for Security Professionals
+                Built for Safer Everyday Life
               </h2>
             </div>
 
             <div className="mt-12 mx-auto max-w-3xl text-center animate-in" style={{ animationDelay: "100ms" }}>
               <p className="text-body-lg text-ink-muted leading-relaxed">
-                CyberNexus is a web-based cybersecurity assessment and utility platform developed as part of the
-                Software Development Project (SDP-2) at BGC Trust University Bangladesh. It brings together essential
-                security checks, threat intelligence, and scan management in a unified web application.
+                CyberNexus is a self security web based platform built with one main purpose:
+                to protect people from the real world threats they face online every day. From
+                phishing links and malicious files to suspicious domains and unsafe IP addresses,
+                it brings professional security checks, threat intelligence and scan history
+                into one simple workspace. Every result becomes a clear verdict, so anyone can
+                understand a risk and act before it turns into a loss. Safety should never be
+                a privilege reserved for experts, and CyberNexus is here to be a trusted
+                companion in everyone&apos;s daily life.
               </p>
-            </div>
-
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-3 animate-in" style={{ animationDelay: "200ms" }}>
-              <span className="px-4 py-2 rounded-xl border border-edge bg-surface-raised font-mono text-sm font-medium text-ink">Next.js 14</span>
-              <span className="px-4 py-2 rounded-xl border border-edge bg-surface-raised font-mono text-sm font-medium text-ink">TypeScript</span>
-              <span className="px-4 py-2 rounded-xl border border-edge bg-surface-raised font-mono text-sm font-medium text-ink">Tailwind CSS</span>
-              <span className="px-4 py-2 rounded-xl border border-edge bg-surface-raised font-mono text-sm font-medium text-ink">FastAPI</span>
-              <span className="px-4 py-2 rounded-xl border border-edge bg-surface-raised font-mono text-sm font-medium text-ink">MongoDB</span>
             </div>
           </div>
         </section>
@@ -274,78 +264,6 @@ export default function HomePage() {
                   Sign In
                 </Button>
               </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Authority Section */}
-        <section id="authority" className="border-t border-edge bg-surface-sunken/30 px-6 py-20 lg:py-28">
-          <div className="mx-auto max-w-7xl">
-            <div className="text-center animate-in">
-              <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-accent">
-                Project Authority
-              </p>
-              <h2 className="mt-3 font-display text-display-md lg:text-display-lg font-bold">
-                CyberNexus
-              </h2>
-              <p className="mt-2 font-mono text-sm text-accent">SDP-2 Project</p>
-            </div>
-
-            <div className="mt-12 mx-auto max-w-2xl animate-in" style={{ animationDelay: "100ms" }}>
-              <p className="text-center text-body-md text-ink-muted leading-relaxed mb-8">
-                Official contact and project information for CyberNexus.
-              </p>
-
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-5 rounded-2xl border border-edge bg-surface-raised">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10">
-                    <Mail className="h-5 w-5 text-accent" />
-                  </div>
-                  <div className="text-center sm:text-left">
-                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted">Official Email</p>
-                    <a
-                      href={`mailto:${AUTHORITY_CONTACT.email}`}
-                      className="mt-1 block font-medium text-body-md text-ink hover:text-accent transition-colors"
-                    >
-                      {AUTHORITY_CONTACT.email}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-5 rounded-2xl border border-edge bg-surface-raised">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#0A66C2]/30 bg-[#0A66C2]/10">
-                    <LinkedinIcon className="h-5 w-5 text-[#0A66C2]" />
-                  </div>
-                  <div className="text-center sm:text-left">
-                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted">LinkedIn</p>
-                    <a
-                      href={AUTHORITY_CONTACT.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 block font-medium text-body-md text-ink hover:text-[#0A66C2] transition-colors"
-                    >
-                      linkedin.com/in/alaminmahmud202
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-5 rounded-2xl border border-edge bg-surface-raised">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#6e40c9]/30 bg-[#6e40c9]/10">
-                    <GithubIcon className="h-5 w-5 text-[#6e40c9]" />
-                  </div>
-                  <div className="text-center sm:text-left">
-                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted">GitHub</p>
-                    <a
-                      href={AUTHORITY_CONTACT.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 block font-medium text-body-md text-ink hover:text-[#6e40c9] transition-colors"
-                    >
-                      github.com/alaminmahmud202
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>

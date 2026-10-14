@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { Mail, Shield } from "lucide-react";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/brand-icons";
+import {
+  DiscordIcon,
+  FacebookIcon,
+  GithubIcon,
+  InstagramIcon,
+  LinkedinIcon,
+} from "@/components/ui/brand-icons";
 
 import { CyberNexusLogo } from "@/components/logo";
-import { Button } from "@/components/ui/button";
 
 export function SiteFooter() {
-  const year = new Date().getFullYear();
-
   const footerLinks = {
     tools: [
       { href: "/dashboard", label: "URL Scanner", fragment: "url" },
@@ -28,45 +31,55 @@ export function SiteFooter() {
   };
 
   const socialLinks = [
-    { href: "https://github.com/alaminmahmud202", label: "GitHub", icon: GithubIcon },
-    { href: "https://www.linkedin.com/in/alaminmahmud202/", label: "LinkedIn", icon: LinkedinIcon },
+    { label: "Facebook", href: "https://facebook.com/am.mahmud.752", icon: FacebookIcon },
+    { label: "Instagram", href: "https://www.instagram.com/_mahmudhxlic/", icon: InstagramIcon },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/alaminmahmud202/", icon: LinkedinIcon },
+    { label: "GitHub", href: "https://github.com/alaminmahmud202", icon: GithubIcon },
+    { label: "Email", href: "mailto:alaminmahmud684@gmail.com", icon: Mail },
   ];
+
+  const iconButtonClass =
+    "flex h-10 w-10 items-center justify-center rounded-xl border border-edge bg-surface-raised text-ink-muted transition-all duration-200 hover:border-accent/50 hover:bg-accent/10 hover:text-accent";
 
   return (
     <footer className="border-t border-edge bg-surface-sunken/30">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:py-16">
         {/* Main Grid */}
-        <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr_1fr] lg:gap-12">
           {/* Brand Section */}
-          <div className="lg:col-span-1">
+          <div className="lg:pr-8">
             <Link href="/" className="flex items-center gap-2.5" aria-label="CyberNexus home">
               <CyberNexusLogo size="xl" />
             </Link>
             <p className="mt-6 text-body-md text-ink-muted leading-relaxed max-w-xs">
               A unified console for threat intelligence and security auditing. Built for security professionals, developers, and researchers.
             </p>
-            <div className="mt-6">
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted">Official Email</p>
-              <a
-                href="mailto:alaminmahmud684@gmail.com"
-                className="mt-1 block font-medium text-body-md text-ink hover:text-accent transition-colors"
-              >
-                alaminmahmud684@gmail.com
-              </a>
-            </div>
-            <div className="mt-4 flex items-center gap-3">
+
+            {/* Social Links — icon-only */}
+            <div className="mt-6 flex flex-wrap items-center gap-3" role="list" aria-label="Social links">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={social.href.startsWith("http") ? "_blank" : undefined}
+                  rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
                   aria-label={social.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-edge bg-surface-raised text-ink-muted transition-all duration-200 hover:border-accent/50 hover:bg-accent/10 hover:text-accent"
+                  title={social.label}
+                  role="listitem"
+                  className={iconButtonClass}
                 >
                   <social.icon className="h-5 w-5" />
                 </a>
               ))}
+              {/* Discord — no valid destination available yet, rendered non-clickable */}
+              <span
+                aria-label="Discord"
+                title="Discord — link coming soon"
+                role="listitem"
+                className={`${iconButtonClass} cursor-not-allowed opacity-60 hover:border-edge hover:bg-surface-raised hover:text-ink-muted`}
+              >
+                <DiscordIcon className="h-5 w-5" />
+              </span>
             </div>
           </div>
 
@@ -104,36 +117,6 @@ export function SiteFooter() {
               ))}
             </ul>
           </nav>
-
-          {/* Project Info */}
-          <div className="lg:col-span-1">
-            <h3 className="font-display font-semibold text-ink">Project</h3>
-            <div className="mt-4 space-y-3 text-body-sm text-ink-muted">
-              <p>BGC Trust University Bangladesh</p>
-              <p>Software Development Project (SDP-2)</p>
-              <p>Department of Computer Science and Engineering</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="mt-10 border-t border-edge" />
-
-        {/* Bottom Bar */}
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
-          {/* Copyright */}
-          <p className="text-body-sm text-ink-muted text-center sm:text-left">
-            © {year} CyberNexus. All rights reserved.
-          </p>
-
-          {/* Tech Stack */}
-          <div className="flex flex-wrap items-center justify-center gap-2 text-caption text-ink-faint">
-            <span className="px-2 py-1 rounded bg-surface-raised border border-edge font-mono">Next.js</span>
-            <span className="px-2 py-1 rounded bg-surface-raised border border-edge font-mono">TypeScript</span>
-            <span className="px-2 py-1 rounded bg-surface-raised border border-edge font-mono">Tailwind CSS</span>
-            <span className="px-2 py-1 rounded bg-surface-raised border border-edge font-mono">FastAPI</span>
-            <span className="px-2 py-1 rounded bg-surface-raised border border-edge font-mono">MongoDB</span>
-          </div>
         </div>
       </div>
     </footer>
