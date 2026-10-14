@@ -1,5 +1,6 @@
+import type { ComponentType, CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { Mail, Shield } from "lucide-react";
+import { Mail } from "lucide-react";
 import {
   DiscordIcon,
   FacebookIcon,
@@ -10,90 +11,174 @@ import {
 
 import { CyberNexusLogo } from "@/components/logo";
 
+type ToolLink = { href: string; label: string; fragment: string };
+type FooterLink = { href: string; label: string; fragment?: string; external?: boolean };
+type SocialLink = { label: string; href: string; icon: ComponentType<{ className?: string }>; disabled?: boolean };
+
+const securityTools: ToolLink[] = [
+  { href: "/dashboard", label: "URL Scanner", fragment: "url" },
+  { href: "/dashboard", label: "File Scanner", fragment: "file" },
+  { href: "/dashboard", label: "Password Checker", fragment: "password" },
+  { href: "/dashboard", label: "IP Intelligence", fragment: "ip" },
+  { href: "/dashboard", label: "Domain Intelligence", fragment: "domain" },
+  { href: "/dashboard", label: "SSL/TLS Checker", fragment: "ssl" },
+  { href: "/dashboard", label: "Security Headers", fragment: "headers" },
+  { href: "/dashboard", label: "Email Analyzer", fragment: "email-header" },
+];
+
+const supportLinks: FooterLink[] = [
+  { href: "/", label: "Features", fragment: "features" },
+  { href: "/", label: "How It Works", fragment: "how-it-works" },
+  { href: "/login", label: "Sign In" },
+  { href: "/register", label: "Get Started" },
+];
+
+// Only real, reachable destinations are listed here (no fabricated pages).
+const companyLinks: FooterLink[] = [
+  { href: "/", label: "About", fragment: "about" },
+  { href: "https://github.com/alaminmahmud202/CyberNexus#readme", label: "Documentation", external: true },
+];
+
+const socialLinks: SocialLink[] = [
+  { label: "Facebook", href: "https://facebook.com/am.mahmud.752", icon: FacebookIcon },
+  { label: "Instagram", href: "https://www.instagram.com/_mahmudhxlic/", icon: InstagramIcon },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/alaminmahmud202/", icon: LinkedinIcon },
+  { label: "GitHub", href: "https://github.com/alaminmahmud202", icon: GithubIcon },
+  // Discord has no valid destination yet, so it renders as a disabled glyph.
+  { label: "Discord", href: "", icon: DiscordIcon, disabled: true },
+  { label: "Email", href: "mailto:alaminmahmud684@gmail.com", icon: Mail },
+];
+
+// Faint cyan technical grid, masked so it fades out toward the bottom.
+const gridBackdropStyle: CSSProperties = {
+  backgroundImage:
+    "linear-gradient(to right, rgba(34, 211, 238, 0.05) 1px, transparent 1px)," +
+    "linear-gradient(to bottom, rgba(34, 211, 238, 0.045) 1px, transparent 1px)",
+  backgroundSize: "44px 44px",
+  maskImage: "radial-gradient(ellipse 90% 65% at 50% 0%, #000 15%, transparent 72%)",
+  WebkitMaskImage: "radial-gradient(ellipse 90% 65% at 50% 0%, #000 15%, transparent 72%)",
+};
+
+function GroupHeading({ id, children }: { id: string; children: ReactNode }) {
+  return (
+    <div>
+      <div className="flex items-center gap-2.5">
+        <span aria-hidden="true" className="h-1.5 w-1.5 rounded-[2px] bg-accent shadow-glow" />
+        <h3
+          id={id}
+          className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-ink"
+        >
+          {children}
+        </h3>
+      </div>
+      <div
+        aria-hidden="true"
+        className="mt-3 h-px w-full bg-gradient-to-r from-accent/25 via-edge to-transparent"
+      />
+    </div>
+  );
+}
+
 export function SiteFooter() {
-  const footerLinks = {
-    tools: [
-      { href: "/dashboard", label: "URL Scanner", fragment: "url" },
-      { href: "/dashboard", label: "File Scanner", fragment: "file" },
-      { href: "/dashboard", label: "Password Checker", fragment: "password" },
-      { href: "/dashboard", label: "IP Intelligence", fragment: "ip" },
-      { href: "/dashboard", label: "Domain Intelligence", fragment: "domain" },
-      { href: "/dashboard", label: "SSL/TLS Checker", fragment: "ssl" },
-      { href: "/dashboard", label: "Security Headers", fragment: "headers" },
-      { href: "/dashboard", label: "Email Analyzer", fragment: "email-header" },
-    ],
-    navigation: [
-      { href: "/", label: "Features", fragment: "features" },
-      { href: "/", label: "How It Works", fragment: "how-it-works" },
-      { href: "/login", label: "Sign In" },
-      { href: "/register", label: "Get Started" },
-    ],
-  };
+  const socialButtonClass =
+    "flex h-10 w-10 items-center justify-center rounded-lg border border-edge bg-surface/40 text-ink-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/10 hover:text-accent hover:shadow-glow";
 
-  const socialLinks = [
-    { label: "Facebook", href: "https://facebook.com/am.mahmud.752", icon: FacebookIcon },
-    { label: "Instagram", href: "https://www.instagram.com/_mahmudhxlic/", icon: InstagramIcon },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/alaminmahmud202/", icon: LinkedinIcon },
-    { label: "GitHub", href: "https://github.com/alaminmahmud202", icon: GithubIcon },
-    { label: "Email", href: "mailto:alaminmahmud684@gmail.com", icon: Mail },
-  ];
+  const socialDisabledClass =
+    "flex h-10 w-10 items-center justify-center rounded-lg border border-edge/50 bg-surface/20 text-ink-faint opacity-70";
 
-  const iconButtonClass =
-    "flex h-10 w-10 items-center justify-center rounded-xl border border-edge bg-surface-raised text-ink-muted transition-all duration-200 hover:border-accent/50 hover:bg-accent/10 hover:text-accent";
+  const linkRowClass =
+    "group flex items-center gap-3 rounded-lg py-[7px] text-body-sm text-ink-muted transition-colors duration-200 hover:text-ink";
 
   return (
-    <footer className="border-t border-edge bg-surface-sunken/30">
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:py-16">
-        {/* Main Grid */}
-        <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr_1fr] lg:gap-12">
-          {/* Brand Section */}
-          <div className="lg:pr-8">
-            <Link href="/" className="flex items-center gap-2.5" aria-label="CyberNexus home">
+    <footer className="relative overflow-hidden border-t border-edge bg-gradient-to-b from-surface-sunken to-base">
+      {/* Faint technical grid backdrop */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={gridBackdropStyle} />
+      {/* Restrained accent glow behind the brand block */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 left-1/4 h-56 w-96 -translate-x-1/2 rounded-full bg-accent/[0.05] blur-3xl"
+      />
+      {/* Thin accent divider separating the footer from the page above */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/45 to-transparent"
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6 py-12 lg:py-16">
+        {/* Asymmetric grid: brand carries the most weight, link groups stay compact */}
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1.15fr)_minmax(0,0.72fr)_minmax(0,0.72fr)] lg:gap-12">
+          {/* Brand */}
+          <div className="sm:col-span-2 lg:col-span-1 lg:pr-8">
+            <Link href="/" className="inline-flex items-center" aria-label="CyberNexus home">
               <CyberNexusLogo size="xl" />
             </Link>
-            <p className="mt-6 text-body-md text-ink-muted leading-relaxed max-w-xs">
-              A unified console for threat intelligence and security auditing. Built for security professionals, developers, and researchers.
+            <div aria-hidden="true" className="mt-5 h-px w-16 bg-gradient-to-r from-accent/60 to-transparent" />
+            <p className="mt-5 max-w-md text-body-md leading-relaxed text-ink-muted">
+              A unified console for threat intelligence and security auditing. Built for security
+              professionals, developers, and researchers.
             </p>
 
-            {/* Social Links — icon-only */}
-            <div className="mt-6 flex flex-wrap items-center gap-3" role="list" aria-label="Social links">
+            <ul className="mt-7 flex flex-wrap items-center gap-2.5" aria-label="Social links">
               {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target={social.href.startsWith("http") ? "_blank" : undefined}
-                  rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  aria-label={social.label}
-                  title={social.label}
-                  role="listitem"
-                  className={iconButtonClass}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
+                <li key={social.label}>
+                  {social.disabled ? (
+                    <span
+                      aria-label={`${social.label} — coming soon`}
+                      role="img"
+                      className={socialDisabledClass}
+                    >
+                      <social.icon className="h-[18px] w-[18px]" />
+                    </span>
+                  ) : (
+                    <a
+                      href={social.href}
+                      target={social.href.startsWith("http") ? "_blank" : undefined}
+                      rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      aria-label={social.label}
+                      className={socialButtonClass}
+                    >
+                      <social.icon className="h-[18px] w-[18px]" />
+                    </a>
+                  )}
+                </li>
               ))}
-              {/* Discord — no valid destination available yet, rendered non-clickable */}
-              <span
-                aria-label="Discord"
-                title="Discord — link coming soon"
-                role="listitem"
-                className={`${iconButtonClass} cursor-not-allowed opacity-60 hover:border-edge hover:bg-surface-raised hover:text-ink-muted`}
-              >
-                <DiscordIcon className="h-5 w-5" />
-              </span>
-            </div>
+            </ul>
           </div>
 
-          {/* Security Tools */}
-          <nav aria-label="Security Tools">
-            <h3 className="font-display font-semibold text-ink">Security Tools</h3>
-            <ul className="mt-4 space-y-2">
-              {footerLinks.tools.map((link) => (
-                <li key={link.href + (link.fragment || "")}>
+          {/* Security Center */}
+          <nav aria-labelledby="footer-security-center" className="sm:col-span-2 lg:col-span-1">
+            <GroupHeading id="footer-security-center">Security Center</GroupHeading>
+            <ul className="mt-4 grid grid-cols-1 gap-x-6 sm:grid-cols-2 lg:grid-cols-1">
+              {securityTools.map((tool, i) => (
+                <li key={tool.href + tool.fragment}>
+                  <Link href={`${tool.href}#${tool.fragment}`} className={linkRowClass}>
+                    <span
+                      aria-hidden="true"
+                      className="w-5 shrink-0 font-mono text-[0.7rem] tabular-nums text-accent/45 transition-colors duration-200 group-hover:text-accent"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="truncate">{tool.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Support */}
+          <nav aria-labelledby="footer-support">
+            <GroupHeading id="footer-support">Support</GroupHeading>
+            <ul className="mt-4 space-y-0.5">
+              {supportLinks.map((link) => (
+                <li key={link.label}>
                   <Link
                     href={link.href + (link.fragment ? `#${link.fragment}` : "")}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-body-sm text-ink-muted transition-colors hover:text-accent hover:bg-surface"
+                    className={linkRowClass}
                   >
-                    <Shield className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span
+                      aria-hidden="true"
+                      className="h-px w-3 shrink-0 bg-edge-strong transition-all duration-200 group-hover:w-4 group-hover:bg-accent"
+                    />
                     <span>{link.label}</span>
                   </Link>
                 </li>
@@ -101,16 +186,22 @@ export function SiteFooter() {
             </ul>
           </nav>
 
-          {/* Navigation */}
-          <nav aria-label="Navigation">
-            <h3 className="font-display font-semibold text-ink">Navigation</h3>
-            <ul className="mt-4 space-y-2">
-              {footerLinks.navigation.map((link) => (
+          {/* Company */}
+          <nav aria-labelledby="footer-company">
+            <GroupHeading id="footer-company">Company</GroupHeading>
+            <ul className="mt-4 space-y-0.5">
+              {companyLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href + (link.fragment ? `#${link.fragment}` : "")}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-body-sm text-ink-muted transition-colors hover:text-accent hover:bg-surface"
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                    className={linkRowClass}
                   >
+                    <span
+                      aria-hidden="true"
+                      className="h-px w-3 shrink-0 bg-edge-strong transition-all duration-200 group-hover:w-4 group-hover:bg-accent"
+                    />
                     <span>{link.label}</span>
                   </Link>
                 </li>

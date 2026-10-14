@@ -56,14 +56,14 @@ export default function HomePage() {
       <PublicNavbar />
       <main className="flex flex-1 flex-col pt-16">
         {/* Hero Section */}
-        <section id="hero" className="relative overflow-hidden px-6 pt-20 pb-16 lg:pt-28 lg:pb-24">
+        <section id="hero" className="relative overflow-hidden px-6 pt-14 pb-12 lg:pt-20 lg:pb-16">
           {/* Background treatment: deep navy-to-black with subtle grid */}
           <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_70%_20%,rgba(34,211,238,0.08),transparent_65%)]" />
           <div aria-hidden="true" className="absolute inset-0 bg-grid bg-grid-fade opacity-40" />
-          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-base" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-base" />
 
           <div className="relative mx-auto max-w-7xl">
-            <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-10">
+            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
               {/* Left Content */}
               <div className="animate-in text-center lg:text-left">
                 <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl xl:text-[5.25rem]">
@@ -86,7 +86,7 @@ export default function HomePage() {
                 </p>
 
                 {/* CTAs */}
-                <div className="mt-9 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
                   <Link href="/register">
                     <Button size="lg" icon={<ArrowRight className="h-4 w-4" />} iconPosition="right">
                       Explore Platform
@@ -109,7 +109,7 @@ export default function HomePage() {
         </section>
 
         {/* Highlight Cards */}
-        <section className="relative px-6 pb-20 lg:pb-28">
+        <section className="relative px-6 pb-12 lg:pb-16">
           <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
             {HIGHLIGHTS.map(({ title, description, icon: Icon }, index) => (
               <Card
@@ -137,7 +137,7 @@ export default function HomePage() {
         </section>
 
         {/* Features Section - Security Modules */}
-        <section id="features" className="px-6 py-24 lg:py-32">
+        <section id="features" className="px-6 py-16 lg:py-20">
           <div className="mx-auto max-w-7xl">
             <div className="text-center animate-in">
               <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-accent">
@@ -151,7 +151,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
               {SERVICES.map(({ icon: Icon, title, description, id }, index) => (
                 <Card
                   key={title}
@@ -185,7 +185,7 @@ export default function HomePage() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="border-t border-edge bg-surface-sunken/30 px-6 py-24 lg:py-32">
+        <section id="how-it-works" className="border-t border-edge bg-surface-sunken/30 px-6 py-16 lg:py-20">
           <div className="mx-auto max-w-7xl">
             <div className="text-center animate-in">
               <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-accent">
@@ -196,7 +196,7 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="mt-16 grid gap-8 md:grid-cols-3">
+            <div className="mt-10 grid gap-8 md:grid-cols-3 lg:mt-12">
               {HOW_IT_WORKS.map(({ step, title, description, icon: Icon }, index) => (
                 <div key={step} className="relative animate-in" style={{ animationDelay: `${index * 100}ms` }}>
                   <div className="mb-4 flex items-center gap-3">
@@ -218,7 +218,7 @@ export default function HomePage() {
         </section>
 
         {/* About Section */}
-        <section id="about" className="px-6 py-24 lg:py-32">
+        <section id="about" className="px-6 py-16 lg:py-20">
           <div className="mx-auto max-w-7xl">
             <div className="text-center animate-in">
               <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-accent">
@@ -229,7 +229,7 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="mt-12 mx-auto max-w-3xl text-center animate-in" style={{ animationDelay: "100ms" }}>
+            <div className="mt-8 mx-auto max-w-3xl text-center animate-in" style={{ animationDelay: "100ms" }}>
               <p className="text-body-lg text-ink-muted leading-relaxed">
                 CyberNexus is a self security web based platform built with one main purpose:
                 to protect people from the real world threats they face online every day. From
@@ -245,7 +245,7 @@ export default function HomePage() {
         </section>
 
         {/* CTA Section */}
-        <section className="border-t border-edge bg-surface-sunken/30 px-6 py-24 lg:py-32">
+        <section className="border-t border-edge bg-surface-sunken/30 px-6 py-16 lg:py-20">
           <div className="mx-auto max-w-3xl text-center animate-in">
             <h2 className="font-display text-display-md lg:text-display-lg font-bold">
               Ready to Secure Your Infrastructure?
