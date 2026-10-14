@@ -1,14 +1,34 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Globe, FileUp, KeyRound, Radar, Network, ShieldCheck, ListChecks, Mail } from "lucide-react";
+import { ArrowRight, CheckCircle2, Search, ShieldCheck, TrendingUp, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/brand-icons";
 
 import { PublicNavbar } from "@/components/app/public-navbar";
-import { CyberNexusMark, CyberNexusLogo } from "@/components/logo";
+import { ShieldIllustration } from "@/components/app/shield-illustration";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardIcon } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { SERVICES } from "@/lib/services";
+
+const HIGHLIGHTS = [
+  {
+    title: "Assess exposure",
+    description:
+      "Scan your URLs, files, domains and IPs to uncover potential threats and vulnerabilities before they become incidents.",
+    icon: Search,
+  },
+  {
+    title: "Investigate indicators",
+    description:
+      "Leverage VirusTotal and AbuseIPDB integrations to get deeper insights into suspicious activity and known threat intelligence.",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Improve security posture",
+    description:
+      "Use actionable results and detailed reports to fix issues, reduce risk and build a stronger, more resilient security infrastructure.",
+    icon: TrendingUp,
+  },
+];
 
 const HOW_IT_WORKS = [
   {
@@ -43,107 +63,77 @@ export default function HomePage() {
       <PublicNavbar />
       <main className="flex flex-1 flex-col pt-16">
         {/* Hero Section */}
-        <section id="hero" className="relative overflow-hidden px-6 py-24 lg:py-36">
-          {/* Subtle background grid pattern */}
-          <div aria-hidden="true" className="absolute inset-0 bg-grid bg-grid-fade opacity-30" />
-          {/* Subtle gradient glow */}
-          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-blue-500/5" />
-          {/* Central network visualization */}
-          <div aria-hidden="true" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] max-w-full max-h-full rounded-full bg-accent/5 blur-[200px] opacity-50" />
-          
+        <section id="hero" className="relative overflow-hidden px-6 pt-20 pb-16 lg:pt-28 lg:pb-24">
+          {/* Background treatment: deep navy-to-black with subtle grid */}
+          <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_70%_20%,rgba(34,211,238,0.08),transparent_65%)]" />
+          <div aria-hidden="true" className="absolute inset-0 bg-grid bg-grid-fade opacity-40" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-base" />
+
           <div className="relative mx-auto max-w-7xl">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              {/* Left Content - Brand Dominant */}
-              <div className="text-center lg:text-left animate-in">
-                {/* Logo Mark - prominent but not overwhelming */}
-                <div className="inline-flex items-center justify-center lg:justify-start mb-6 animate-in" style={{ animationDelay: "100ms" }}>
-                  <CyberNexusMark size={48} className="text-accent drop-shadow-[0_0_24px_rgba(34,211,238,0.4)]" />
-                </div>
-                
-                {/* Main Title - "CyberNexus" dominant */}
-                <h1 className="font-display text-display-xl lg:text-[5.5rem] font-extrabold tracking-tight leading-[1.05] animate-in" style={{ animationDelay: "150ms" }}>
+            <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-10">
+              {/* Left Content */}
+              <div className="animate-in text-center lg:text-left">
+                <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl xl:text-[5.25rem]">
                   Cyber<span className="text-gradient">Nexus</span>
                 </h1>
-                
-                {/* Tagline */}
-                <p className="mt-4 text-body-lg lg:text-body-lg text-ink-muted animate-in font-medium tracking-wide" style={{ animationDelay: "200ms" }}>
-                  Secure Your Digital World.
+
+                <p className="mt-5 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl lg:text-[2.1rem] lg:leading-snug">
+                  Know Your Risks. Secure Your Future.
                 </p>
-                
-                {/* Description based on actual functionality */}
-                <p className="mt-6 max-w-xl lg:max-w-2xl text-body-md lg:text-body-lg leading-relaxed text-ink-muted animate-in" style={{ animationDelay: "250ms" }}>
-                  A unified cybersecurity assessment platform with 8 security modules for URL scanning, file analysis, 
-                  password strength, IP intelligence, domain reputation, SSL/TLS auditing, security headers, 
-                  and email header analysis — powered by VirusTotal and AbuseIPDB.
+
+                <p className="mx-auto mt-5 max-w-xl text-body-md leading-relaxed text-ink-muted sm:text-body-lg lg:mx-0">
+                  Check before you trust. Scan URLs, files, domains and IPs with eight
+                  practical cybersecurity tools.
                 </p>
-                
+
                 {/* CTAs */}
-                <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-4 animate-in" style={{ animationDelay: "300ms" }}>
+                <div className="mt-9 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
                   <Link href="/register">
-                    <Button size="lg" icon={<ArrowRight className="h-4 w-4" />} iconPosition="right" className="gap-3">
-                      Get Started
+                    <Button size="lg" icon={<ArrowRight className="h-4 w-4" />} iconPosition="right">
+                      Explore Platform
                     </Button>
                   </Link>
                   <Link href="#features">
-                    <Button size="lg" variant="outline" icon={<ArrowRight className="h-4 w-4" />} iconPosition="right" className="gap-3">
-                      Explore Modules
+                    <Button size="lg" variant="outline" icon={<ArrowRight className="h-4 w-4" />} iconPosition="right">
+                      View Modules
                     </Button>
                   </Link>
                 </div>
-                
-                {/* Trust indicators */}
-                <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-ink-muted animate-in" style={{ animationDelay: "350ms" }}>
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-safe" />
-                    No credit card required
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-safe" />
-                    8 security modules
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-safe" />
-                    Instant scans
-                  </span>
-                </div>
               </div>
 
-              {/* Right Visual - Digital Network / Shield */}
-              <div className="relative animate-in-slow" style={{ animationDelay: "200ms" }}>
-                <div className="relative aspect-square max-w-md lg:max-w-lg mx-auto">
-                  {/* Outer glow */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/10 rounded-3xl blur-3xl" />
-                  
-                  {/* Main card with network visualization */}
-                  <div className="relative rounded-3xl border border-edge/50 bg-surface-raised/50 p-6 lg:p-8 overflow-hidden">
-                    {/* Network background */}
-                    <div className="absolute inset-0 bg-grid opacity-20 bg-grid-fade" />
-                    
-                    <div className="relative space-y-4 font-mono text-sm">
-                      {SERVICES.map(({ icon: Icon, title }, index) => (
-                        <div key={title} className="flex items-center gap-3 text-ink-muted group" style={{ animationDelay: `${index * 60}ms` }}>
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-edge bg-surface-sunken text-accent transition-all group-hover:border-accent/50 group-hover:bg-accent/10">
-                            <Icon className="h-4.5 w-4.5" />
-                          </span>
-                          <span className="font-medium text-ink group-hover:text-accent transition-colors">{title}</span>
-                          <span className="ml-auto flex items-center gap-1.5 text-safe">
-                            <span className="h-2 w-2 rounded-full bg-safe animate-pulse" />
-                            <span className="font-medium">Active</span>
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Subtle shield outline decoration */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      <svg className="w-full h-full opacity-20" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M150 15 L275 47.5 V135 C275 225 215 278 150 300 C85 278 25 225 25 135 V47.5 Z" stroke="#22D3EE" strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
+              {/* Right Visual - Cybersecurity Shield */}
+              <div className="animate-in-slow" style={{ animationDelay: "150ms" }}>
+                <ShieldIllustration />
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Highlight Cards */}
+        <section className="relative px-6 pb-20 lg:pb-28">
+          <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
+            {HIGHLIGHTS.map(({ title, description, icon: Icon }, index) => (
+              <Card
+                key={title}
+                variant="elevated"
+                hover
+                padding="lg"
+                className="animate-in"
+                style={{ animationDelay: `${index * 90}ms` }}
+              >
+                <CardContent className="pt-0">
+                  <CardIcon variant="accent">
+                    <Icon className="h-6 w-6" />
+                  </CardIcon>
+                  <h3 className="mt-5 font-display text-lg font-semibold tracking-tight text-ink sm:text-xl">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-body-sm leading-relaxed text-ink-muted sm:text-body-md">
+                    {description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
 
