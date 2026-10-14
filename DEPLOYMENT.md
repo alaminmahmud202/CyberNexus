@@ -46,7 +46,7 @@ MONGODB_DB_NAME=cybernexus
 VIRUSTOTAL_API_KEY=your-key
 ABUSEIPDB_API_KEY=your-key
 GEMINI_API_KEY=your-key
-AI_MODEL=gemini-1.5-flash
+AI_MODEL=gemini-3.5-flash
 CORS_ORIGINS=https://your-netlify-domain.netlify.app
 ```
 

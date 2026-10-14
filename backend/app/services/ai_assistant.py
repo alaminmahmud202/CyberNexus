@@ -8,7 +8,10 @@ import httpx
 from app.core.config import settings
 
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
-TIMEOUT_SECONDS = 90.0
+# Tried in order when the primary AI_MODEL is rate-limited or unavailable.
+# gemini-3.5-flash-lite is the most reliable fallback (rarely 429/503).
+FALLBACK_MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"]
+TIMEOUT_SECONDS = 45.0
 MAX_PROMPT_CHARS = 6000
 MAX_OUTPUT_TOKENS = 1024
 
@@ -71,8 +74,13 @@ async def _call_gemini(
     model: str | None = None,
     retries: int = 2,
 ) -> Dict[str, Any]:
-    model = model or settings.AI_MODEL
-    url = f"{GEMINI_BASE_URL}/models/{model}:generateContent?key={api_key}"
+    # Try the configured model first, then fall back to other flash models.
+    # Individual Gemini models regularly return transient 503 "high demand"
+    # errors, so a single model choice makes the chatbot unreliable.
+    models: list[str] = [model or settings.AI_MODEL]
+    for candidate in FALLBACK_MODELS:
+        if candidate not in models:
+            models.append(candidate)
 
     payload = {
         "contents": contents,
@@ -83,32 +91,60 @@ async def _call_gemini(
         },
     }
 
-    last_error = None
-    for attempt in range(retries + 1):
-        try:
-            async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS) as client:
-                response = await client.post(url, json=payload)
-            break
-        except httpx.TimeoutException as exc:
-            last_error = exc
-            if attempt < retries:
-                await asyncio.sleep(2 * (attempt + 1))
-                continue
-            raise AiAssistantError("The AI service timed out after multiple attempts") from exc
-        except httpx.HTTPError as exc:
-            raise AiAssistantError(f"AI service request failed: {exc}") from exc
+    last_status: int | None = None
+    last_timeout = False
 
-    if response.status_code in (401, 403):
-        raise AiAssistantError("Gemini rejected the configured API key")
-    if response.status_code == 429:
+    for model_name in models:
+        url = f"{GEMINI_BASE_URL}/models/{model_name}:generateContent?key={api_key}"
+        retried_503 = False
+        while True:
+            try:
+                async with httpx.AsyncClient(
+                    timeout=httpx.Timeout(TIMEOUT_SECONDS, connect=10.0)
+                ) as client:
+                    response = await client.post(url, json=payload)
+            except httpx.TimeoutException:
+                last_timeout = True
+                break  # hung request -> fail over to the next model quickly
+            except httpx.HTTPError as exc:
+                raise AiAssistantError(f"AI service request failed: {exc}") from exc
+
+            last_timeout = False
+            status = response.status_code
+
+            if status in (401, 403):
+                raise AiAssistantError("Gemini rejected the configured API key")
+            if status == 404:
+                # Model retired or misconfigured: skip to the next model.
+                last_status = status
+                break
+            if status == 429:
+                # This model's quota is exhausted - the next model has its own
+                # quota, so fail over immediately instead of waiting.
+                last_status = status
+                break
+            if status >= 500:
+                # Transient "high demand": one quick retry, then fail over.
+                last_status = status
+                if not retried_503:
+                    retried_503 = True
+                    await asyncio.sleep(1.5)
+                    continue
+                break
+
+            try:
+                response.raise_for_status()
+            except httpx.HTTPStatusError as exc:
+                raise AiAssistantError(f"AI service returned HTTP {status}") from exc
+            return response.json()
+
+    if last_timeout:
+        raise AiAssistantError("The AI service timed out after multiple attempts")
+    if last_status == 429:
         raise AiAssistantError("AI rate limit exceeded - try again shortly")
-    if response.status_code >= 500:
+    if last_status is not None and last_status >= 500:
         raise AiAssistantError("The AI service is temporarily unavailable")
-    try:
-        response.raise_for_status()
-    except httpx.HTTPStatusError as exc:
-        raise AiAssistantError(f"AI service returned HTTP {response.status_code}") from exc
-    return response.json()
+    raise AiAssistantError(f"AI service returned HTTP {last_status}")
 
 
 def _extract_text(data: Dict[str, Any]) -> str:
@@ -172,7 +208,6 @@ async def chat_stream(
         )
 
     model = settings.AI_MODEL
-    url = f"{GEMINI_BASE_URL}/models/{model}:streamGenerateContent?key={settings.GEMINI_API_KEY}&alt=sse"
 
     contents = []
     if history:
@@ -190,27 +225,62 @@ async def chat_stream(
         },
     }
 
-    try:
-        async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS) as client:
-            async with client.stream("POST", url, json=payload) as response:
-                if response.status_code in (401, 403):
-                    raise AiAssistantError("Gemini rejected the configured API key")
-                if response.status_code == 429:
-                    raise AiAssistantError("AI rate limit exceeded")
-                response.raise_for_status()
+    models = [model]
+    for candidate in FALLBACK_MODELS:
+        if candidate not in models:
+            models.append(candidate)
 
-                async for line in response.aiter_lines():
-                    if line.startswith("data: "):
-                        try:
-                            chunk = json.loads(line[6:])
-                            text = _extract_text(chunk)
-                            if text:
-                                yield text
-                        except json.JSONDecodeError:
-                            continue
-    except AiAssistantError:
-        raise
-    except httpx.TimeoutException:
+    last_status: int | None = None
+    last_timeout = False
+    yielded_any = False
+
+    for model_name in models:
+        url = (
+            f"{GEMINI_BASE_URL}/models/{model_name}:streamGenerateContent"
+            f"?key={settings.GEMINI_API_KEY}&alt=sse"
+        )
+        try:
+            async with httpx.AsyncClient(
+                timeout=httpx.Timeout(TIMEOUT_SECONDS, connect=10.0)
+            ) as client:
+                async with client.stream("POST", url, json=payload) as response:
+                    status = response.status_code
+                    if status in (401, 403):
+                        raise AiAssistantError("Gemini rejected the configured API key")
+                    if status == 404:
+                        last_status = status
+                        continue  # retired/unknown model -> try next
+                    if status == 429 or status >= 500:
+                        last_status = status
+                        continue  # transient -> try next model
+                    response.raise_for_status()
+
+                    async for line in response.aiter_lines():
+                        if line.startswith("data: "):
+                            try:
+                                chunk = json.loads(line[6:])
+                                text = _extract_text(chunk)
+                                if text:
+                                    yielded_any = True
+                                    yield text
+                            except json.JSONDecodeError:
+                                continue
+            return  # streamed successfully
+        except AiAssistantError:
+            raise
+        except httpx.TimeoutException:
+            last_timeout = True
+            if yielded_any:
+                # Partial response already sent; restarting would duplicate text.
+                raise AiAssistantError("The AI service timed out")
+            continue  # try next model
+        except httpx.HTTPError as exc:
+            raise AiAssistantError(f"AI service request failed: {exc}") from exc
+
+    if last_timeout and last_status is None:
         raise AiAssistantError("The AI service timed out")
-    except httpx.HTTPError as exc:
-        raise AiAssistantError(f"AI service request failed: {exc}")
+    if last_status == 429:
+        raise AiAssistantError("AI rate limit exceeded")
+    if last_status is not None and last_status >= 500:
+        raise AiAssistantError("The AI service is temporarily unavailable")
+    raise AiAssistantError(f"AI service returned HTTP {last_status}")

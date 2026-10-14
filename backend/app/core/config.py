@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     VIRUSTOTAL_API_KEY: str = ""
     ABUSEIPDB_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
-    AI_MODEL: str = "gemini-1.5-flash"
+    AI_MODEL: str = "gemini-3.5-flash"
 
     MONGODB_URI: str = "mongodb://localhost:27017"
     MONGODB_DB_NAME: str = "cybernexus"
