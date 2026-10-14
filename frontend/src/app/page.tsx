@@ -81,9 +81,15 @@ export default function HomePage() {
                   Know Your Risks. Secure Your Future.
                 </p>
 
-                <p className="mx-auto mt-5 max-w-xl text-body-md leading-relaxed text-ink-muted sm:text-body-lg lg:mx-0">
-                  Check before you trust. Scan URLs, files, domains and IPs with eight
-                  practical cybersecurity tools.
+                <p className="mt-4 text-body-sm font-medium tracking-wide text-accent sm:text-[0.95rem]">
+                  Check before you trust.
+                </p>
+
+                <p className="mx-auto mt-3 max-w-xl text-body-md leading-relaxed text-ink-muted sm:text-body-lg lg:mx-0 lg:max-w-2xl">
+                  Attackers are counting on you not to check. Prove them wrong. Scan
+                  suspicious links, files, domains and IPs with eight powerful tools, get
+                  a clear verdict instantly, and stay one step ahead of every threat, free
+                  and in under a minute.
                 </p>
 
                 {/* CTAs */}
