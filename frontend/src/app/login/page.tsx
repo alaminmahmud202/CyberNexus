@@ -165,10 +165,6 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-
-        <p className="text-caption text-ink-faint">
-          © {new Date().getFullYear()} CyberNexus - BGC Trust University SDP-2
-        </p>
       </div>
 
       {/* Right Side - Form */}
@@ -301,10 +297,6 @@ export default function LoginPage() {
               </p>
             </CardContent>
           </Card>
-
-          <p className="mt-8 text-center text-caption text-ink-faint">
-            A Software Development Project at BGC Trust University
-          </p>
         </div>
       </div>
     </main>
