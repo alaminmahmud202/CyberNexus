@@ -27,16 +27,23 @@ const securityTools: ToolLink[] = [
 ];
 
 const supportLinks: FooterLink[] = [
-  { href: "/", label: "Features", fragment: "features" },
   { href: "/", label: "How It Works", fragment: "how-it-works" },
-  { href: "/login", label: "Sign In" },
-  { href: "/register", label: "Get Started" },
+  { href: "https://github.com/alaminmahmud202/CyberNexus/issues", label: "Help Center", external: true },
+  { href: "mailto:alaminmahmud684@gmail.com", label: "Contact Us" },
+  {
+    href: "https://github.com/alaminmahmud202/CyberNexus/issues/new",
+    label: "Report a Security Issue",
+    external: true,
+  },
 ];
 
 // Only real, reachable destinations are listed here (no fabricated pages).
 const companyLinks: FooterLink[] = [
-  { href: "/", label: "About", fragment: "about" },
-  { href: "https://github.com/alaminmahmud202/CyberNexus#readme", label: "Documentation", external: true },
+  { href: "/", label: "About CyberNexus", fragment: "about" },
+  // The mission statement lives inside the About section.
+  { href: "/", label: "Our Mission", fragment: "about" },
+  { href: "https://github.com/alaminmahmud202/CyberNexus#author", label: "Developer", external: true },
+  { href: "https://github.com/alaminmahmud202/CyberNexus#overview", label: "Project Overview", external: true },
 ];
 
 const socialLinks: SocialLink[] = [
@@ -58,6 +65,32 @@ const gridBackdropStyle: CSSProperties = {
   maskImage: "radial-gradient(ellipse 90% 65% at 50% 0%, #000 15%, transparent 72%)",
   WebkitMaskImage: "radial-gradient(ellipse 90% 65% at 50% 0%, #000 15%, transparent 72%)",
 };
+
+const linkRowClass =
+  "group flex items-center gap-3 rounded-lg py-[7px] text-body-sm text-ink-muted transition-colors duration-200 hover:text-ink";
+
+function LinkList({ links }: { links: FooterLink[] }) {
+  return (
+    <ul className="mt-4 space-y-0.5">
+      {links.map((link) => (
+        <li key={link.label}>
+          <Link
+            href={link.href + (link.fragment ? `#${link.fragment}` : "")}
+            target={link.external ? "_blank" : undefined}
+            rel={link.external ? "noopener noreferrer" : undefined}
+            className={linkRowClass}
+          >
+            <span
+              aria-hidden="true"
+              className="h-px w-3 shrink-0 bg-edge-strong transition-all duration-200 group-hover:w-4 group-hover:bg-accent"
+            />
+            <span>{link.label}</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function GroupHeading({ id, children }: { id: string; children: ReactNode }) {
   return (
@@ -85,9 +118,6 @@ export function SiteFooter() {
 
   const socialDisabledClass =
     "flex h-10 w-10 items-center justify-center rounded-lg border border-edge/50 bg-surface/20 text-ink-faint opacity-70";
-
-  const linkRowClass =
-    "group flex items-center gap-3 rounded-lg py-[7px] text-body-sm text-ink-muted transition-colors duration-200 hover:text-ink";
 
   return (
     <footer className="relative overflow-hidden border-t border-edge bg-gradient-to-b from-surface-sunken to-base">
@@ -149,15 +179,13 @@ export function SiteFooter() {
           <nav aria-labelledby="footer-security-center" className="sm:col-span-2 lg:col-span-1">
             <GroupHeading id="footer-security-center">Security Center</GroupHeading>
             <ul className="mt-4 grid grid-cols-1 gap-x-6 sm:grid-cols-2 lg:grid-cols-1">
-              {securityTools.map((tool, i) => (
+              {securityTools.map((tool) => (
                 <li key={tool.href + tool.fragment}>
                   <Link href={`${tool.href}#${tool.fragment}`} className={linkRowClass}>
                     <span
                       aria-hidden="true"
-                      className="w-5 shrink-0 font-mono text-[0.7rem] tabular-nums text-accent/45 transition-colors duration-200 group-hover:text-accent"
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
+                      className="h-px w-3 shrink-0 bg-edge-strong transition-all duration-200 group-hover:w-4 group-hover:bg-accent"
+                    />
                     <span className="truncate">{tool.label}</span>
                   </Link>
                 </li>
@@ -168,45 +196,13 @@ export function SiteFooter() {
           {/* Support */}
           <nav aria-labelledby="footer-support">
             <GroupHeading id="footer-support">Support</GroupHeading>
-            <ul className="mt-4 space-y-0.5">
-              {supportLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href + (link.fragment ? `#${link.fragment}` : "")}
-                    className={linkRowClass}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="h-px w-3 shrink-0 bg-edge-strong transition-all duration-200 group-hover:w-4 group-hover:bg-accent"
-                    />
-                    <span>{link.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <LinkList links={supportLinks} />
           </nav>
 
           {/* Company */}
           <nav aria-labelledby="footer-company">
             <GroupHeading id="footer-company">Company</GroupHeading>
-            <ul className="mt-4 space-y-0.5">
-              {companyLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href + (link.fragment ? `#${link.fragment}` : "")}
-                    target={link.external ? "_blank" : undefined}
-                    rel={link.external ? "noopener noreferrer" : undefined}
-                    className={linkRowClass}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="h-px w-3 shrink-0 bg-edge-strong transition-all duration-200 group-hover:w-4 group-hover:bg-accent"
-                    />
-                    <span>{link.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <LinkList links={companyLinks} />
           </nav>
         </div>
       </div>
